@@ -1,4 +1,4 @@
-package win.footsta.ru
+package wil.kiiolol.ru
 
 import io.flutter.embedding.android.FlutterActivity
 

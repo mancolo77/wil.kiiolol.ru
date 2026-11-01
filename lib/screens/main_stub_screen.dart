@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../services/quiz_service.dart';
+import '../services/user_progress_service.dart';
 import '../theme/app_theme.dart';
-import 'tabs/match_center_tab.dart';
-import 'tabs/quiz_hub_tab.dart';
-import 'tabs/daily_challenges_tab.dart';
-import 'tabs/loyalty_profile_tab.dart';
+import 'tabs/home_tab.dart';
+import 'tabs/matches_tab.dart';
+import 'tabs/progress_tab.dart';
 
 class MainStubScreen extends StatefulWidget {
   const MainStubScreen({super.key});
@@ -16,26 +14,22 @@ class MainStubScreen extends StatefulWidget {
 
 class _MainStubScreenState extends State<MainStubScreen> {
   int _currentIndex = 0;
-  late bool _isLoading;
+  bool _isLoading = true;
 
   final List<Widget> _tabs = const [
-    MatchCenterTab(),
-    QuizHubTab(),
-    DailyChallengesTab(),
-    LoyaltyProfileTab(),
+    HomeTab(),
+    MatchesTab(),
+    ProgressTab(),
   ];
 
   @override
   void initState() {
     super.initState();
-    _isLoading = !QuizService().isLoaded;
-    if (_isLoading) {
-      _loadData();
-    }
+    _initData();
   }
 
-  Future<void> _loadData() async {
-    await QuizService().init();
+  Future<void> _initData() async {
+    await UserProgressService().init();
     if (mounted) {
       setState(() {
         _isLoading = false;
@@ -58,15 +52,17 @@ class _MainStubScreenState extends State<MainStubScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _tabs,
+      body: SafeArea(
+        child: IndexedStack(
+          index: _currentIndex,
+          children: _tabs,
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          color: AppTheme.surface,
+          color: AppTheme.navBackground,
           border: Border(
-            top: BorderSide(color: AppTheme.surfaceBorder, width: 1),
+            top: BorderSide(color: AppTheme.border, width: 1),
           ),
         ),
         child: BottomNavigationBar(
@@ -76,33 +72,34 @@ class _MainStubScreenState extends State<MainStubScreen> {
               _currentIndex = index;
             });
           },
-          backgroundColor: AppTheme.surface,
+          backgroundColor: AppTheme.navBackground,
           selectedItemColor: AppTheme.primary,
-          unselectedItemColor: AppTheme.textMuted,
-          selectedLabelStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold),
-          unselectedLabelStyle: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500),
+          unselectedItemColor: AppTheme.textSecondary,
+          selectedLabelStyle: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
           type: BottomNavigationBarType.fixed,
           elevation: 0,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.sports_soccer_rounded),
-              activeIcon: Icon(Icons.sports_soccer_rounded, color: AppTheme.primary),
-              label: 'Матч-центр',
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home_rounded),
+              label: 'Главная',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.quiz_rounded),
-              activeIcon: Icon(Icons.quiz_rounded, color: AppTheme.primary),
-              label: 'Викторины',
+              icon: Icon(Icons.sports_soccer_outlined),
+              activeIcon: Icon(Icons.sports_soccer_rounded),
+              label: 'Матчи',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.emoji_events_rounded),
-              activeIcon: Icon(Icons.emoji_events_rounded, color: AppTheme.primary),
-              label: 'Задания',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.stars_rounded),
-              activeIcon: Icon(Icons.stars_rounded, color: AppTheme.primary),
-              label: 'Лояльность',
+              icon: Icon(Icons.military_tech_outlined),
+              activeIcon: Icon(Icons.military_tech_rounded),
+              label: 'Мой прогресс',
             ),
           ],
         ),
